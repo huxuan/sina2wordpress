@@ -25,32 +25,40 @@ SLEEP_TIME = 2
 class Sina2WordPress():
     """Summary of Sina2WordPress
     """
-    def __init__(self, sina_url, wordpress_admin, wordpress_url):
+    def __init__(self, interface, sina_url, wordpress_admin, wordpress_url):
         """Init Sina2WordPress"""
         self.output_file = wordpress_admin + '.xml'
         f = file(self.output_file, 'w')
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n\n<rss version="2.0"\n\txmlns:excerpt="http://wordpress.org/export/1.1/excerpt/"\n\txmlns:content="http://purl.org/rss/1.0/modules/content/"\n\txmlns:wfw="http://wellformedweb.org/CommentAPI/"\n\txmlns:dc="http://purl.org/dc/elements/1.1/"\n\txmlns:wp="http://wordpress.org/export/1.1/"\n>\n\n<channel>\n<wp:wxr_version>1.1</wp:wxr_version>\n')
         f.close()
 
-        print sina_url
+        msg = 'Begin to Convert: %s' % (sina_url, )
+        interface.ProgressInit(msg)
         content_url, sina_admin = Sina2WordPressCore.indexAnalyze(sina_url)
         
         posts_urls = []
         while True:
-            print content_url
             time.sleep(SLEEP_TIME / 2)
 
+            msg = 'Analyzing Contents: %s' % content_url
+            interface.ProgressUpdate(msg)
             posts_page_urls, content_url = Sina2WordPressCore.contentAnalyze(content_url) 
             posts_urls.extend(posts_page_urls)
             if not content_url:
                 break
         posts_urls.reverse()
+        total = len(posts_urls)
+
+        msg = '(0/%d) Contents Analyze finish. %d Posts Found!' % (total, total)
+        interface.ProgressUpdate(msg)
 
         comment_id = 0
-        for post_url in posts_urls[4:]:
+        for post_url in posts_urls:
             time.sleep(SLEEP_TIME)
-            #Todo(huxuan): Show post Progress here
-            print '(%d/%d)' % (posts_urls.index(post_url) + 1, len(posts_urls)) ,post_url
+
+            count = posts_urls.index(post_url) + 1
+            msg = '(%d/%d) Analyzing Post: %s' % (count, total, post_url, )
+            interface.ProgressUpdate(msg, count, total)
             post_text, comment_status = Sina2WordPressCore.postAnalyze(post_url, wordpress_admin)
             text = [post_text]
 
@@ -63,7 +71,9 @@ class Sina2WordPress():
 
                     num += 1
                     comment_url = r'http://blog.sina.com.cn/s/comment_%s_%d.html' %(key, num)
-                    print comment_url
+
+                    msg = '(%d/%d) Analyzing Comment: %s' % (count, total, comment_url, )
+                    interface.ProgressUpdate(msg, count, total)
 
                     comment_text, comment_id = Sina2WordPressCore.commentAnalyze(
                             comment_url, comment_id, sina_admin, wordpress_admin, wordpress_url)
@@ -78,7 +88,8 @@ class Sina2WordPress():
 
         self.output('\n</channel>\n</rss>')
 
-        print 'Succeed !'
+        msg = 'Convert Succeed!\nThe result is saved in %s.' % (self.output_file, )
+        interface.FinishShow(msg)
     
     def output(self, text):
         """docstring for print2file"""
@@ -93,8 +104,16 @@ class Sina2WordPressInterface(object):
         """Init Sina2WordPressGUI"""
         pass
 
-    def ShowProgress(self, *args, **kwargs):
-        """docstring for ShowProgress"""
+    def ProgressInit(self, *args, **kwargs):
+        """docstring for ProgressInit"""
+        pass
+
+    def ProgressUpdate(self, *args, **kwargs):
+        """docstring for ProgressUpdate"""
+        pass
+
+    def FinishShow(self, *args, **kwargs):
+        """docstring for FinishShow"""
         pass
 
     def ShowError(self, msg):
@@ -107,11 +126,19 @@ class Sina2WordPressCLI(Sina2WordPressInterface):
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
-        Sina2WordPress(*args)
+        Sina2WordPress(self, *args)
 
-    def ShowProgress(self, *args, **kwargs):
-        """docstring for ShowProgress"""
-        pass
+    def ProgressInit(self, msg):
+        """docstring for ProgressInit"""
+        print msg
+
+    def ProgressUpdate(self, msg, count=0, total=0):
+        """docstring for ProgressUpdate"""
+        print msg
+
+    def FinishShow(self, msg):
+        """docstring for FinishShow"""
+        print msg
 
     def ShowError(self, msg):
         """Summary of ShowError
@@ -123,12 +150,20 @@ class Sina2WordPressGUI(Sina2WordPressInterface):
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
-        self.app = wx.App()
+        self.app = wx.App(True)
         self.window = Sina2WordPressWindow(None, title='Sina2WordPress')
         self.app.MainLoop()
 
-    def ShowProgress(self, *args, **kwargs):
-        """docstring for ShowProgress"""
+    def ProgressInit(self, *args, **kwargs):
+        """docstring for ProgressInit"""
+        pass
+
+    def ProgressUpdate(self, *args, **kwargs):
+        """docstring for ProgressUpdate"""
+        pass
+
+    def FinishShow(self, *args, **kwargs):
+        """docstring for FinishShow"""
         pass
 
     def ShowError(self, msg):
@@ -136,7 +171,7 @@ class Sina2WordPressGUI(Sina2WordPressInterface):
         """
         pass
 
-class Sina2WordPressWindow(wx.Frame):
+class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
     """Window of Sina2WordPressGUI
     """
     def __init__(self, *args, **kwargs):
@@ -181,7 +216,20 @@ class Sina2WordPressWindow(wx.Frame):
         args = [self.sina_url_value.GetValue(),
                 self.wordpress_admin_value.GetValue(),
                 self.wordpress_url_value.GetValue(), ]
-        Sina2WordPress(*args)
+        Sina2WordPress(self, *args)
+
+    def ProgressInit(self, msg):
+        """docstring for ProgressInit"""
+        self.progressDialog = wx.ProgressDialog('Sina2WordPress Progress', msg)
+
+    def ProgressUpdate(self, msg, count=0, total=1):
+        """docstring for ProgressUpdate"""
+        self.progressDialog.Update(99 * count / total, msg)
+
+    def FinishShow(self, msg):
+        """docstring for FinishShow"""
+        finishDialog = Sina2WordPressMessageDialog(self.progressDialog, msg, 'Sina2WordPress Finish', wx.OK)
+        self.progressDialog.Destroy()
         self.Close(True)
 
     def ShowHelp(self, event):

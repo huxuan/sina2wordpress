@@ -1,11 +1,11 @@
 #!/usr/bin/python
 #encoding: utf8
 # +-----------------------------------------------------------------------------
-# | File: Sina2WordPress.py
+# | File: Sina2WordPressCore.py
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2011-02-21
-# | Last modified: 2012-02-23
+# | Last modified: 2012-02-24
 # | Description:
 # |     Core Process of Sina2WordPress
 # |     Analyze Sina Blog and convert it to WXR for WordPress
@@ -39,7 +39,7 @@ comment_time_pattern=re.compile(r'<em class="SG_txtc">(.*?)</em>')
 comment_content_pattern=re.compile(r'(?:<div class="SG_revert_Inner SG_txtb".*?>|<p class="myReInfo wordwrap">)(.*?)</div>', re.S)
 
 def commentAnalyze(url, comment_id, sina_admin, wordpress_admin,wordpress_url):
-    """Analyze the comment page including decode via json.loads() and regular expression"""
+    """Analyze the comment page via json.loads() and regular expression"""
 
     #headers['Referer'] = url
     request = urllib2.Request(url, None, headers)
@@ -69,9 +69,6 @@ def commentAnalyze(url, comment_id, sina_admin, wordpress_admin,wordpress_url):
         content[i] = content_replace_pattern.sub('', content[i])
         content[i] = content_space_replace_pattern.sub(' ', content[i])
         text.append('\n\t<wp:comment>\n\t\t<wp:comment_id>'+str(comment_id)+'</wp:comment_id>\n\t\t<wp:comment_author><![CDATA['+author[i].encode('utf8')+']]></wp:comment_author>\n\t\t<wp:comment_author_url>'+url.encode('utf8')+'</wp:comment_author_url>\n\t\t<wp:comment_date>'+comment_time[i].encode('utf8')+'</wp:comment_date>\n\t\t<wp:comment_content><![CDATA['+content[i].encode('utf8')+']]></wp:comment_content>\n\t\t<wp:comment_approved>1</wp:comment_approved>\n\t\t<wp:comment_parent>'+str(parent)+'</wp:comment_parent>\n\t</wp:comment>')
-        #if parent:
-        #    text.append('\n\t\t<wp:comment_parent>'+parent+'</wp:comment_parent>')
-        #text.append('\n\t</wp:comment>')
 
     return ''.join(text), comment_id
 
@@ -82,7 +79,6 @@ def postAnalyze(url, wordpress_admin):
     request = urllib2.Request(url, None, headers)
     page = urllib2.urlopen(request).read()
     #headers['Referer'] = url
-    print 'Fuck1'
 
     post_title = post_title_pattern.search(page).group(1)
     post_time = post_time_pattern.search(page).group(1)
@@ -90,7 +86,6 @@ def postAnalyze(url, wordpress_admin):
     post_content = content_replace_pattern.sub('', post_content)
     post_content = content_space_replace_pattern.sub(' ', post_content)
     post_content = post_content.lstrip().rstrip()
-    print 'Fuck2'
     if post_content[-6:] == '</div>': 
         post_content = post_content[:-6].rstrip()
 
@@ -104,7 +99,6 @@ def postAnalyze(url, wordpress_admin):
         comment = 'open'
     else:
         comment = 'closed'
-    print 'Fuck3'
 
     text = ['\n<item>\n\t<title>'+post_title+'</title>\n\t<dc:creator>' + str(wordpress_admin) + '</dc:creator>\n\t<content:encoded><![CDATA['+post_content+']]></content:encoded>\n\t<wp:post_date>'+post_time+'</wp:post_date>\n\t<wp:comment_status>'+comment+'</wp:comment_status>\n\t<wp:status>publish</wp:status>\n\t<wp:post_type>post</wp:post_type>\n\t<wp:is_sticky>0</wp:is_sticky>\n\t<category domain="category" nicename="'+urllib.quote(post_category)+'"><![CDATA['+post_category+']]></category>']
 
@@ -113,7 +107,6 @@ def postAnalyze(url, wordpress_admin):
         post_tags = result.group(1)
         for tag in post_tags.split(','):
             text.append('\n\t<category domain="post_tag" nicename="'+urllib.quote(tag)+'"><![CDATA['+tag+']]></category>')
-    print 'Fuck4'
     
     return ''.join(text), comment
 

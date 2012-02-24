@@ -1,13 +1,13 @@
 #!/usr/bin/python
 #encoding: utf8
 # +-----------------------------------------------------------------------------
-# | File: Sina2WordPressCLI.py
+# | File: Sina2WordPress.py
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
-# | Created: 2012-02-23
-# | Last modified: 2012-02-23
+# | Created: 2012-12-11
+# | Last modified: 2012-02-24
 # | Description:
-# |     Sina2WordPress with Command Line Interface
+# |     Main Process of Sina2WordPress
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
 # | License GPLv3
@@ -24,9 +24,6 @@ SLEEP_TIME = 2
 
 class Sina2WordPress():
     """Summary of Sina2WordPress
-
-    Attributes:
-        args: Description of args
     """
     def __init__(self, sina_url, wordpress_admin, wordpress_url):
         """Init Sina2WordPress"""
@@ -90,7 +87,7 @@ class Sina2WordPress():
         f.close()
 
 class Sina2WordPressInterface(object):
-    """Graphic User Interface for Sina2WordPress
+    """Virtual Interface for Sina2WordPress
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
@@ -106,7 +103,7 @@ class Sina2WordPressInterface(object):
         pass
 
 class Sina2WordPressCLI(Sina2WordPressInterface):
-    """Graphic User Interface for Sina2WordPress
+    """Command Line Interface for Sina2WordPress
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
@@ -210,7 +207,7 @@ def main():
     elif len(sys.argv) == 1:
         Sina2WordPressGUI()
     else:
-        print '[Error] The number of parameters is invalid!'
+        print '[Error] The number of parameters is invalid! 4 Needed.'
 
 if __name__ == '__main__':
     main()

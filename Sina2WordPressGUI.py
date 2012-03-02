@@ -15,7 +15,7 @@
 
 import wx
 
-from Sina2WordPress import Sina2WordPressInterface
+from Sina2WordPress import Sina2WordPress, Sina2WordPressInterface
 
 class Sina2WordPressGUI(Sina2WordPressInterface):
     """Graphic User Interface for Sina2WordPress

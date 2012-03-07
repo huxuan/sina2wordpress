@@ -32,7 +32,7 @@ class Sina2WordPress():
 
         msg = 'Begin to Convert: %s' % (sina_url, )
         interface.ProgressInit(msg)
-        content_url, sina_admin = Sina2WordPressCore.indexAnalyze(sina_url)
+        content_url, sina_admin = Sina2WordPressCore.index_analyze(sina_url)
         
         posts_urls = []
         while True:
@@ -40,7 +40,7 @@ class Sina2WordPress():
 
             msg = 'Analyzing Contents: %s' % content_url
             interface.ProgressUpdate(msg)
-            posts_page_urls, content_url = Sina2WordPressCore.contentAnalyze(content_url) 
+            posts_page_urls, content_url = Sina2WordPressCore.content_analyze(content_url) 
             posts_urls.extend(posts_page_urls)
             if not content_url:
                 break
@@ -57,7 +57,7 @@ class Sina2WordPress():
             count = posts_urls.index(post_url) + 1
             msg = '(%d/%d) Analyzing Post: %s' % (count, total, post_url, )
             interface.ProgressUpdate(msg, count, total)
-            post_text, comment_status = Sina2WordPressCore.postAnalyze(post_url, wordpress_admin)
+            post_text, comment_status = Sina2WordPressCore.post_analyze(post_url, wordpress_admin)
             text = [post_text]
 
             if comment_status == 'open': 
@@ -73,7 +73,7 @@ class Sina2WordPress():
                     msg = '(%d/%d) Analyzing Comment: %s' % (count, total, comment_url, )
                     interface.ProgressUpdate(msg, count, total)
 
-                    comment_text, comment_id = Sina2WordPressCore.commentAnalyze(
+                    comment_text, comment_id = Sina2WordPressCore.comment_analyze(
                             comment_url, comment_id, sina_admin, wordpress_admin, wordpress_url)
 
                     if comment_text:

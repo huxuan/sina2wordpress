@@ -22,7 +22,6 @@ import urllib2
 import cookielib
 
 headers = {'Referer':'http://blog.sina.com.cn/', 'User-Agent':'Opera/9.60',}
-EXCEPTION_SLEEP_TIME = 30
 
 sina_admin_pattern = re.compile(r'<title>(.*?)_新浪博客</title>')
 contents_pattern = re.compile(r'<a +href="(.*?)">博文目录</a>')
@@ -45,13 +44,15 @@ def urlopen_request(req):
     try:
         res = urllib2.urlopen(req).read()
     except:
+        time_sleep = 30
         while True:
-            print 'Fuck for exception sleep!'
-            time.sleep(EXCEPTION_SLEEP_TIME)
+            print 'Fuck for exception sleep!', time_sleep
+            time.sleep(time_sleep)
             try:
                 res = urllib.urlopen(req).read()
                 break
             except:
+                time_sleep += 30
                 pass
     return res
 

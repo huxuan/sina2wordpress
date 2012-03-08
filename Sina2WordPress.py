@@ -5,9 +5,15 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2012-12-11
-# | Last modified: 2012-02-24
+# | Last modified: 2012-03-08
 # | Description:
-# |     Main Process of Sina2WordPress
+# |     Sina2WordPress is a python script to convert sina blog to wordpress.
+# |     The script will crawl sina blog webpages and convert it to WXR file.
+# |     Wordpress eXtended Rss (WXR) is a wordpress native supported filetype.
+# |
+# |     This is the main process of Sina2WordPress, which will judge whether to
+# |     use Command Line Interface (CLI) or Graphic User Interface (GUI) and
+# |     will call Sina2WordPressCore module to control conversion process
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
 # | License GPLv3
@@ -96,10 +102,10 @@ class Sina2WordPress():
         f.close()
 
 class Sina2WordPressInterface(object):
-    """Virtual Interface for Sina2WordPress
+    """Virtual Interface Class
     """
     def __init__(self, *args):
-        """Init Sina2WordPressGUI"""
+        """Init Sina2WordPressInterface"""
         pass
 
     def ProgressInit(self, *args, **kwargs):
@@ -114,16 +120,11 @@ class Sina2WordPressInterface(object):
         """docstring for FinishShow"""
         pass
 
-    def ShowError(self, msg):
-        """Summary of ShowError
-        """
-        pass
-
 class Sina2WordPressCLI(Sina2WordPressInterface):
-    """Command Line Interface for Sina2WordPress
+    """Command Line Interface
     """
     def __init__(self, *args):
-        """Init Sina2WordPressGUI"""
+        """Init Sina2WordPressCLI"""
         Sina2WordPress(self, *args)
 
     def ProgressInit(self, msg):
@@ -137,11 +138,6 @@ class Sina2WordPressCLI(Sina2WordPressInterface):
     def FinishShow(self, msg):
         """docstring for FinishShow"""
         print msg
-
-    def ShowError(self, msg):
-        """Summary of ShowError
-        """
-        pass
 
 def main():
     """Summary of main

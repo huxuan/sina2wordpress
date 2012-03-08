@@ -5,7 +5,7 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2012-02-24
-# | Last modified: 2012-02-24
+# | Last modified: 2012-03-08
 # | Description:
 # |     Graphic User Interface for Sina2WordPress
 # |
@@ -22,9 +22,8 @@ class Sina2WordPressGUI(Sina2WordPressInterface):
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
-        import Sina2WordPressGUI
         self.app = wx.App(True)
-        self.window = Sina2WordPressGUI.Sina2WordPressWindow(None, title='Sina2WordPress')
+        self.window = Sina2WordPressWindow(None, title='Sina2WordPress')
         self.app.MainLoop()
 
     def ProgressInit(self, *args, **kwargs):
@@ -37,11 +36,6 @@ class Sina2WordPressGUI(Sina2WordPressInterface):
 
     def FinishShow(self, *args, **kwargs):
         """docstring for FinishShow"""
-        pass
-
-    def ShowError(self, msg):
-        """Summary of ShowError
-        """
         pass
 
 class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):

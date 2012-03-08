@@ -49,7 +49,7 @@ def urlopen_request(req):
             print 'Fuck for exception sleep!', time_sleep
             time.sleep(time_sleep)
             try:
-                res = urllib.urlopen(req).read()
+                res = urllib2.urlopen(req).read()
                 break
             except:
                 time_sleep += 30

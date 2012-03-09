@@ -21,7 +21,7 @@ import urllib
 import urllib2
 import cookielib
 
-SLEEP_TIME = 2
+SLEEP_TIME = 1
 
 headers = {'Referer':'http://blog.sina.com.cn/', 'User-Agent':'Opera/9.60',}
 
@@ -126,17 +126,17 @@ def content_clear(text):
 def urlopen_request(req):
     """docstring for urlopen_request"""
     try:
-        res = urllib2.urlopen(req).read()
+        res = urllib2.urlopen(req, timeout=10).read()
     except:
-        time_sleep = 30
+        time_sleep = 5
         while True:
             print 'Fuck for exception sleep!', time_sleep
             time.sleep(time_sleep)
             try:
-                res = urllib2.urlopen(req).read()
+                res = urllib2.urlopen(req, timeout=10).read()
                 break
             except:
-                time_sleep += 30
+                time_sleep += 5
                 pass
     return res
 
@@ -204,7 +204,8 @@ def post_analyze(url, wordpress_admin):
     if result: 
         post_tags = content_clear(result.group(1))
         for tag in post_tags.split(','):
-            text.append('\n<category domain="post_tag" nicename="' + urllib.quote(tag) + '"><![CDATA[' + tag + ']]></category>')
+            if tag:
+                text.append('\n<category domain="post_tag" nicename="' + urllib.quote(tag) + '"><![CDATA[' + tag + ']]></category>')
     return ''.join(text), comment
 
 def content_analyze(url):

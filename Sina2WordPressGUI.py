@@ -89,6 +89,7 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
     def progress_init(self, msg):
         """docstring for progress_init"""
         self.progressDialog = wx.ProgressDialog('Sina2WordPress Progress', msg)
+        self.progressDialog.SetSize((640, 100))
 
     def progress_update(self, msg, count=0, total=1):
         """docstring for progress_update"""

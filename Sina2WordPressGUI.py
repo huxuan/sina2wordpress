@@ -46,19 +46,19 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
         """Init Sina2WordPressWindow"""
         super(Sina2WordPressWindow, self).__init__(*args, **kwargs)
 
-        mainSizer = wx.FlexGridSizer(rows=4, cols=2)
+        mainSizer = wx.FlexGridSizer(rows=4, cols=2, vgap=2, hgap=2)
 
-        self.sina_url_label = wx.StaticText(self, label='sina_url (e.g. http://blog.sina.com.cn/twoclod)')
-        self.sina_url_value = wx.TextCtrl(self)
+        self.sina_url_label = wx.StaticText(self, label='sina_url (e.g. http://blog.sina.com.cn/victorhu)')
+        self.sina_url_value = wx.TextCtrl(self, size=(200, -1))
 
-        self.wordpress_admin_label = wx.StaticText(self, label='wordpress_admin: (e.g. admin)')
-        self.wordpress_admin_value = wx.TextCtrl(self)
+        self.wordpress_admin_label = wx.StaticText(self, label='wordpress_admin: (e.g. huxuan)')
+        self.wordpress_admin_value = wx.TextCtrl(self, size=(200, -1))
 
         self.wordpress_url_label = wx.StaticText(self, label='wordpress_url: (e.g. http://huxuan.org/)')
-        self.wordpress_url_value = wx.TextCtrl(self)
+        self.wordpress_url_value = wx.TextCtrl(self, size=(200, -1))
 
-        self.help_button = wx.Button(self, label=u'帮助(help)')
-        self.run_button = wx.Button(self, label=u"运行(run)")
+        self.help_button = wx.Button(self, label=u'关于(about)')
+        self.run_button = wx.Button(self, label=u'运行(run)')
 
         mainSizer.Add(self.sina_url_label)
         mainSizer.Add(self.sina_url_value)
@@ -89,7 +89,7 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
     def progress_init(self, msg):
         """docstring for progress_init"""
         self.progressDialog = wx.ProgressDialog('Sina2WordPress Progress', msg)
-        self.progressDialog.SetSize((640, 100))
+        self.progressDialog.SetSize((640, -1))
 
     def progress_update(self, msg, count=0, total=1):
         """docstring for progress_update"""
@@ -104,7 +104,7 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
     def help_show(self, event):
         """Show help info dialog
         """
-        content = 'http://github.com/huxuan/sina2wordpress'
+        content = 'http://huxuan.org/projects/sina2wordpress'
         helpDialog = Sina2WordPressMessageDialog(self, content, 'Help', wx.OK)
 
 class Sina2WordPressMessageDialog(wx.MessageDialog):

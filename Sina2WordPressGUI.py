@@ -15,7 +15,8 @@
 
 import wx
 
-from Sina2WordPress import Sina2WordPress, Sina2WordPressInterface
+from Sina2WordPressCore import Sina2WordPressCore
+from Sina2WordPress import Sina2WordPressInterface
 
 class Sina2WordPressGUI(Sina2WordPressInterface):
     """Graphic User Interface for Sina2WordPress
@@ -83,7 +84,7 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
         args = [self.sina_url_value.GetValue(),
                 self.wordpress_admin_value.GetValue(),
                 self.wordpress_url_value.GetValue(), ]
-        Sina2WordPress(self, *args)
+        Sina2WordPressCore(self, *args)
 
     def ProgressInit(self, msg):
         """docstring for ProgressInit"""

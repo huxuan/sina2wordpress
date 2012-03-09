@@ -21,6 +21,8 @@ import urllib
 import urllib2
 import cookielib
 
+SLEEP_TIME = 2
+
 headers = {'Referer':'http://blog.sina.com.cn/', 'User-Agent':'Opera/9.60',}
 
 sina_admin_pattern = re.compile(r'<title>(.*?)_新浪博客</title>')
@@ -38,6 +40,81 @@ comment_author_pattern = re.compile(r'<span class="SG_revert_Tit".*?>(.*?)</span
 comment_url_pattern = re.compile(r'<a href="(.*?)" target="_blank">(.*?)</a>')
 comment_time_pattern = re.compile(r'<em class="SG_txtc">(.*?)</em>')
 comment_content_pattern = re.compile(r'(?:<div class="SG_revert_Inner SG_txtb".*?>|<p class="myReInfo wordwrap">)(.*?)</div>', re.S)
+
+class Sina2WordPressCore():
+    """Summary of Sina2WordPressCore
+    """
+    def __init__(self, interface, sina_url, wordpress_admin, wordpress_url):
+        """Init Sina2WordPress"""
+        self.output_file = wordpress_admin + '.xml'
+        f = file(self.output_file, 'w')
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n\n<rss version="2.0"\nxmlns:excerpt="http://wordpress.org/export/1.1/excerpt/"\nxmlns:content="http://purl.org/rss/1.0/modules/content/"\nxmlns:wfw="http://wellformedweb.org/CommentAPI/"\nxmlns:dc="http://purl.org/dc/elements/1.1/"\nxmlns:wp="http://wordpress.org/export/1.1/"\n>\n\n<channel>\n<wp:wxr_version>1.1</wp:wxr_version>\n')
+        f.close()
+
+        msg = 'Begin to Convert: %s' % (sina_url, )
+        interface.ProgressInit(msg)
+        content_url, sina_admin = index_analyze(sina_url)
+        
+        posts_urls = []
+        while True:
+            time.sleep(SLEEP_TIME / 2)
+
+            msg = 'Analyzing Contents: %s' % content_url
+            interface.ProgressUpdate(msg)
+            posts_page_urls, content_url = content_analyze(content_url) 
+            posts_urls.extend(posts_page_urls)
+            if not content_url:
+                break
+        posts_urls.reverse()
+        total = len(posts_urls)
+
+        msg = '(0/%d) Contents Analyze finish. %d Posts Found!' % (total, total)
+        interface.ProgressUpdate(msg)
+
+        comment_id = 0
+        for post_url in posts_urls:
+            time.sleep(SLEEP_TIME)
+
+            count = posts_urls.index(post_url) + 1
+            msg = '(%d/%d) Analyzing Post: %s' % (count, total, post_url, )
+            interface.ProgressUpdate(msg, count, total)
+            post_text, comment_status = post_analyze(post_url, wordpress_admin)
+            text = [post_text]
+
+            if comment_status == 'open': 
+                key = post_url.replace(r'http://blog.sina.com.cn/s/blog_','').replace(r'.html','')
+                num = 0
+
+                while True:
+                    time.sleep(SLEEP_TIME)
+
+                    num += 1
+                    comment_url = r'http://blog.sina.com.cn/s/comment_%s_%d.html' %(key, num)
+
+                    msg = '(%d/%d) Analyzing Comment: %s' % (count, total, comment_url, )
+                    interface.ProgressUpdate(msg, count, total)
+
+                    comment_text, comment_id = comment_analyze(
+                            comment_url, comment_id, sina_admin, wordpress_admin, wordpress_url)
+
+                    if comment_text:
+                        text.append(comment_text)
+                    else:
+                        break
+
+            text.append('\n</item>')
+            self.output(''.join(text))
+
+        self.output('\n</channel>\n</rss>')
+
+        msg = 'Convert Succeed!\nThe result is saved in %s.' % (self.output_file, )
+        interface.FinishShow(msg)
+    
+    def output(self, text):
+        """docstring for print2file"""
+        f = file(self.output_file, 'a')
+        f.write(text)
+        f.close()
 
 def urlopen_request(req):
     """docstring for urlopen_request"""
@@ -86,7 +163,7 @@ def comment_analyze(url, comment_id, sina_admin, wordpress_admin,wordpress_url):
         comment_id += 1
         content[i] = content_replace_pattern.sub('', content[i])
         content[i] = content_space_replace_pattern.sub(' ', content[i])
-        text.append('\n\t<wp:comment>\n\t\t<wp:comment_id>'+str(comment_id)+'</wp:comment_id>\n\t\t<wp:comment_author><![CDATA['+author[i].encode('utf8')+']]></wp:comment_author>\n\t\t<wp:comment_author_url>'+url.encode('utf8')+'</wp:comment_author_url>\n\t\t<wp:comment_date>'+comment_time[i].encode('utf8')+'</wp:comment_date>\n\t\t<wp:comment_content><![CDATA['+content[i].encode('utf8')+']]></wp:comment_content>\n\t\t<wp:comment_approved>1</wp:comment_approved>\n\t\t<wp:comment_parent>'+str(parent)+'</wp:comment_parent>\n\t</wp:comment>')
+        text.append('\n<wp:comment>\n<wp:comment_id>'+str(comment_id)+'</wp:comment_id>\n<wp:comment_author><![CDATA['+author[i].encode('utf8')+']]></wp:comment_author>\n<wp:comment_author_url>'+url.encode('utf8')+'</wp:comment_author_url>\n<wp:comment_date>'+comment_time[i].encode('utf8')+'</wp:comment_date>\n<wp:comment_content><![CDATA['+content[i].encode('utf8')+']]></wp:comment_content>\n<wp:comment_approved>1</wp:comment_approved>\n<wp:comment_parent>'+str(parent)+'</wp:comment_parent>\n</wp:comment>')
 
     return ''.join(text), comment_id
 
@@ -118,13 +195,13 @@ def post_analyze(url, wordpress_admin):
     else:
         comment = 'closed'
 
-    text = ['\n<item>\n\t<title>'+post_title+'</title>\n\t<dc:creator>' + str(wordpress_admin) + '</dc:creator>\n\t<content:encoded><![CDATA['+post_content+']]></content:encoded>\n\t<wp:post_date>'+post_time+'</wp:post_date>\n\t<wp:comment_status>'+comment+'</wp:comment_status>\n\t<wp:status>publish</wp:status>\n\t<wp:post_type>post</wp:post_type>\n\t<wp:is_sticky>0</wp:is_sticky>\n\t<category domain="category" nicename="'+urllib.quote(post_category)+'"><![CDATA['+post_category+']]></category>']
+    text = ['\n<item>\n<title>'+post_title+'</title>\n<dc:creator>' + str(wordpress_admin) + '</dc:creator>\n<content:encoded><![CDATA['+post_content+']]></content:encoded>\n<wp:post_date>'+post_time+'</wp:post_date>\n<wp:comment_status>'+comment+'</wp:comment_status>\n<wp:status>publish</wp:status>\n<wp:post_type>post</wp:post_type>\n<wp:is_sticky>0</wp:is_sticky>\n<category domain="category" nicename="'+urllib.quote(post_category)+'"><![CDATA['+post_category+']]></category>']
 
     result = post_tags_pattern.search(page)
     if result: 
         post_tags = result.group(1)
         for tag in post_tags.split(','):
-            text.append('\n\t<category domain="post_tag" nicename="'+urllib.quote(tag)+'"><![CDATA['+tag+']]></category>')
+            text.append('\n<category domain="post_tag" nicename="'+urllib.quote(tag)+'"><![CDATA['+tag+']]></category>')
     
     return ''.join(text), comment
 

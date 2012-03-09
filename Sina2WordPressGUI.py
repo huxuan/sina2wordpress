@@ -57,8 +57,8 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
         self.wordpress_url_label = wx.StaticText(self, label='wordpress_url: (e.g. http://huxuan.org/)')
         self.wordpress_url_value = wx.TextCtrl(self)
 
-        self.help_button = wx.Button(self, label='帮助(help)')
-        self.run_button = wx.Button(self, label="运行(run)")
+        self.help_button = wx.Button(self, label=u'帮助(help)')
+        self.run_button = wx.Button(self, label=u"运行(run)")
 
         mainSizer.Add(self.sina_url_label)
         mainSizer.Add(self.sina_url_value)

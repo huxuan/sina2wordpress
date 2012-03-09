@@ -12,8 +12,8 @@
 # |     Wordpress eXtended Rss (WXR) is a wordpress native supported filetype.
 # |
 # |     This is the main process of Sina2WordPress, which will judge whether to
-# |     use Command Line Interface (CLI) or Graphic User Interface (GUI) and
-# |     will call Sina2WordPressCore module which control conversion process
+# |     use Command Line Interface (CLI) or Graphical User Interface (GUI) and
+# |     will call Sina2WordPressCore which will control conversion process
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
 # | License GPLv3
@@ -24,49 +24,30 @@ import time
 
 from Sina2WordPressCore import Sina2WordPressCore
 
-class Sina2WordPressInterface(object):
-    """Virtual Interface Class
-    """
-    def __init__(self, *args):
-        """Init Sina2WordPressInterface"""
-        pass
-
-    def ProgressInit(self, *args, **kwargs):
-        """docstring for ProgressInit"""
-        pass
-
-    def ProgressUpdate(self, *args, **kwargs):
-        """docstring for ProgressUpdate"""
-        pass
-
-    def FinishShow(self, *args, **kwargs):
-        """docstring for FinishShow"""
-        pass
-
-class Sina2WordPressCLI(Sina2WordPressInterface):
+class Sina2WordPressCLI():
     """Command Line Interface
     """
     def __init__(self, *args):
         """Init Sina2WordPressCLI"""
         Sina2WordPressCore(self, *args)
 
-    def ProgressInit(self, msg):
-        """docstring for ProgressInit"""
+    def progress_init(self, msg):
+        """docstring for progress_init"""
         print msg
 
-    def ProgressUpdate(self, msg, count=0, total=0):
-        """docstring for ProgressUpdate"""
+    def progress_update(self, msg, count=0, total=0):
+        """docstring for progress_update"""
         print msg
 
-    def FinishShow(self, msg):
-        """docstring for FinishShow"""
+    def finish_show(self, msg):
+        """docstring for finish_show"""
         print msg
 
 def main():
     """Summary of main
     """
     if len(sys.argv) == 4:
-        Sina2WordPressCLI(*sys.argv[1:4])
+        Sina2WordPressCLI(*sys.argv[1:])
     elif len(sys.argv) == 1:
         from Sina2WordPressGUI import Sina2WordPressGUI
         Sina2WordPressGUI()

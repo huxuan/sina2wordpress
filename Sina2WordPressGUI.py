@@ -7,7 +7,7 @@
 # | Created: 2012-02-24
 # | Last modified: 2012-03-09
 # | Description:
-# |     Graphic User Interface for Sina2WordPress
+# |     Graphical User Interface for Sina2WordPress
 # |     This is split to allow use CLI only without wx module
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
@@ -17,10 +17,9 @@
 import wx
 
 from Sina2WordPressCore import Sina2WordPressCore
-from Sina2WordPress import Sina2WordPressInterface
 
-class Sina2WordPressGUI(Sina2WordPressInterface):
-    """Graphic User Interface for Sina2WordPress
+class Sina2WordPressGUI():
+    """Graphical User Interface for Sina2WordPress
     """
     def __init__(self, *args):
         """Init Sina2WordPressGUI"""
@@ -28,16 +27,16 @@ class Sina2WordPressGUI(Sina2WordPressInterface):
         self.window = Sina2WordPressWindow(None, title='Sina2WordPress')
         self.app.MainLoop()
 
-    def ProgressInit(self, *args, **kwargs):
-        """docstring for ProgressInit"""
+    def progress_init(self, *args, **kwargs):
+        """docstring for progress_init"""
         pass
 
-    def ProgressUpdate(self, *args, **kwargs):
-        """docstring for ProgressUpdate"""
+    def progress_update(self, *args, **kwargs):
+        """docstring for progress_update"""
         pass
 
-    def FinishShow(self, *args, **kwargs):
-        """docstring for FinishShow"""
+    def finish_show(self, *args, **kwargs):
+        """docstring for finish_show"""
         pass
 
 class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
@@ -73,13 +72,13 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
         mainSizer.Add(self.help_button)
         mainSizer.Add(self.run_button)
 
-        self.Bind(wx.EVT_BUTTON, self.ShowHelp, self.help_button)
-        self.Bind(wx.EVT_BUTTON, self.CallCore, self.run_button)
+        self.Bind(wx.EVT_BUTTON, self.help_show, self.help_button)
+        self.Bind(wx.EVT_BUTTON, self.call_core, self.run_button)
 
         self.SetSizerAndFit(mainSizer)
         self.Show(True)
 
-    def CallCore(self, event):
+    def call_core(self, event):
         """Call the core convert process
         """
         args = [self.sina_url_value.GetValue(),
@@ -87,28 +86,28 @@ class Sina2WordPressWindow(wx.Frame, Sina2WordPressGUI):
                 self.wordpress_url_value.GetValue(), ]
         Sina2WordPressCore(self, *args)
 
-    def ProgressInit(self, msg):
-        """docstring for ProgressInit"""
+    def progress_init(self, msg):
+        """docstring for progress_init"""
         self.progressDialog = wx.ProgressDialog('Sina2WordPress Progress', msg)
 
-    def ProgressUpdate(self, msg, count=0, total=1):
-        """docstring for ProgressUpdate"""
+    def progress_update(self, msg, count=0, total=1):
+        """docstring for progress_update"""
         self.progressDialog.Update(99 * count / total, msg)
 
-    def FinishShow(self, msg):
-        """docstring for FinishShow"""
+    def finish_show(self, msg):
+        """docstring for finish_show"""
         finishDialog = Sina2WordPressMessageDialog(self.progressDialog, msg, 'Sina2WordPress Finish', wx.OK)
         self.progressDialog.Destroy()
         self.Close(True)
 
-    def ShowHelp(self, event):
+    def help_show(self, event):
         """Show help info dialog
         """
         content = 'http://github.com/huxuan/sina2wordpress'
         helpDialog = Sina2WordPressMessageDialog(self, content, 'Help', wx.OK)
 
 class Sina2WordPressMessageDialog(wx.MessageDialog):
-    """MessageDialog of Sinaw2WordPress
+    """MessageDialog class for Sinaw2WordPress
     """
     def __init__(self, *args, **kwargs):
         """Init Sina2WordPressMessageDialog"""

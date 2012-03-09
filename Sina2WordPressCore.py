@@ -54,14 +54,14 @@ class Sina2WordPressCore():
         msg = 'Begin to Convert: %s' % (sina_url, )
         interface.ProgressInit(msg)
         content_url, sina_admin = index_analyze(sina_url)
-        
+
         posts_urls = []
         while True:
             time.sleep(SLEEP_TIME / 2)
 
             msg = 'Analyzing Contents: %s' % content_url
             interface.ProgressUpdate(msg)
-            posts_page_urls, content_url = content_analyze(content_url) 
+            posts_page_urls, content_url = content_analyze(content_url)
             posts_urls.extend(posts_page_urls)
             if not content_url:
                 break
@@ -81,7 +81,7 @@ class Sina2WordPressCore():
             post_text, comment_status = post_analyze(post_url, wordpress_admin)
             text = [post_text]
 
-            if comment_status == 'open': 
+            if comment_status == 'open':
                 key = post_url.replace(r'http://blog.sina.com.cn/s/blog_','').replace(r'.html','')
                 num = 0
 
@@ -109,7 +109,7 @@ class Sina2WordPressCore():
 
         msg = 'Convert Succeed!\nThe result is saved in %s.' % (self.output_file, )
         interface.FinishShow(msg)
-    
+
     def output(self, text):
         """docstring for print2file"""
         f = file(self.output_file, 'a')

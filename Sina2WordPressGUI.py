@@ -5,9 +5,10 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2012-02-24
-# | Last modified: 2012-03-08
+# | Last modified: 2012-03-09
 # | Description:
 # |     Graphic User Interface for Sina2WordPress
+# |     This is split to allow use CLI only without wx module
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
 # | License GPLv3

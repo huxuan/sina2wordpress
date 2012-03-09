@@ -5,7 +5,7 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2011-02-21
-# | Last modified: 2012-03-08
+# | Last modified: 2012-03-09
 # | Description:
 # |     Core Process of Sina2WordPress
 # |     Analyze Sina Blog and convert it to WXR for WordPress

@@ -5,7 +5,7 @@
 # | Author: huxuan
 # | E-mail: i(at)huxuan.org
 # | Created: 2012-12-11
-# | Last modified: 2012-03-08
+# | Last modified: 2012-03-09
 # | Description:
 # |     Sina2WordPress is a python script to convert sina blog to wordpress.
 # |     The script will crawl sina blog webpages and convert it to WXR file.
@@ -13,7 +13,7 @@
 # |
 # |     This is the main process of Sina2WordPress, which will judge whether to
 # |     use Command Line Interface (CLI) or Graphic User Interface (GUI) and
-# |     will call Sina2WordPressCore module to control conversion process
+# |     will call Sina2WordPressCore module which control conversion process
 # |
 # | Copyrgiht (c) 2012 by huxuan. All rights reserved.
 # | License GPLv3
